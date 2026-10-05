@@ -1,0 +1,132 @@
+# =====================================================================
+# Analog MEMS Electronic Stethoscope - .gitignore
+#
+# Rule: ignore only generated / temporary files. Design sources
+# (.SLDPRT, .SLDASM, .SLDDRW, schematics, PCB layouts, .ioc, .c/.h)
+# must ALWAYS remain tracked.
+# =====================================================================
+
+# ---------------------------------------------------------------------
+# Operating system files
+# ---------------------------------------------------------------------
+.DS_Store
+._*
+Thumbs.db
+ehthumbs.db
+desktop.ini
+$RECYCLE.BIN/
+*~
+.directory
+.Trash-*
+
+# ---------------------------------------------------------------------
+# Editors / IDEs
+# ---------------------------------------------------------------------
+# VS Code: keep shared settings, ignore personal state
+.vscode/*
+!.vscode/settings.json
+!.vscode/tasks.json
+!.vscode/launch.json
+!.vscode/extensions.json
+!.vscode/c_cpp_properties.json
+*.code-workspace
+.history/
+*.swp
+*.swo
+.idea/
+
+# ---------------------------------------------------------------------
+# Temporary files
+# ---------------------------------------------------------------------
+*.tmp
+*.temp
+*.bak
+*.log
+*.orig
+
+# ---------------------------------------------------------------------
+# Python (if used for analysis / tooling)
+# ---------------------------------------------------------------------
+__pycache__/
+*.py[cod]
+.venv/
+venv/
+.ipynb_checkpoints/
+.pytest_cache/
+
+# ---------------------------------------------------------------------
+# Firmware build outputs (STM32 / ARM GCC / CMake)
+# ---------------------------------------------------------------------
+firmware/**/build/
+firmware/**/Debug/
+firmware/**/Release/
+firmware/**/cmake-build-*/
+*.o
+*.obj
+*.d
+*.su
+*.cyclo
+*.elf
+*.map
+*.list
+*.lst
+*.a
+# Compiled images. If you ever need to publish a release binary,
+# force-add it: git add -f firmware/release/xyz.bin
+*.bin
+*.hex
+# STM32CubeIDE / Eclipse local metadata (.project/.cproject are kept)
+.metadata/
+.settings/
+*.launch
+# Keil / IAR generated
+*.uvguix.*
+*.axf
+*.dep
+firmware/**/Objects/
+firmware/**/Listings/
+firmware/**/settings/
+
+# ---------------------------------------------------------------------
+# SolidWorks temporary / lock / backup files
+# (actual .SLDPRT / .SLDASM / .SLDDRW stay tracked)
+# ---------------------------------------------------------------------
+~$*
+*.SWBAK
+*.swbak
+*.sldbak
+*.SLDBAK
+**/Backup of */
+
+# ---------------------------------------------------------------------
+# KiCad temporary / backup / cache files
+# (.kicad_pro, .kicad_sch, .kicad_pcb, .kicad_sym, .kicad_mod stay tracked)
+# ---------------------------------------------------------------------
+*-backups/
+*.kicad_prl
+fp-info-cache
+*.lck
+\#auto_saved_files\#
+_autosave-*
+*-bak
+*.kicad_sch-bak
+*.kicad_pcb-bak
+
+# ---------------------------------------------------------------------
+# Altium Designer temporary / history files
+# (.SchDoc, .PcbDoc, .PrjPcb, .SchLib, .PcbLib stay tracked)
+# ---------------------------------------------------------------------
+History/
+__Previews/
+Project\ Logs\ for\ */
+Project\ Outputs\ for\ */
+*.PrjPcbStructure
+*.SchDocPreview
+*.PcbDocPreview
+
+# ---------------------------------------------------------------------
+# EasyEDA / Eagle backups
+# ---------------------------------------------------------------------
+*.b#[0-9]
+*.s#[0-9]
+*.l#[0-9]
