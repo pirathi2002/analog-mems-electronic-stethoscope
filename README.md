@@ -24,8 +24,8 @@ The system covers:
 | Member | Responsibility | GitHub |
 |---|---|---|
 | Pirathi | Firmware / Embedded Systems | [pirathi2002](https://github.com/pirathi2002) |
-| Thamilezai Ananthakumar | Mechanical Design | [ThamilezaiAnanthakumar](https://github.com/ThamilezaiAnanthakumar) |
-| Dayananthan | PCB / Electronics Design | [Dayananthan2021](https://github.com/Dayananthan2021) |
+| Dayananthan | Mechanical Design | [Dayananthan2021](https://github.com/Dayananthan2021) |
+| Thamilezai Ananthakumar | PCB / Electronics Design | [ThamilezaiAnanthakumar](https://github.com/ThamilezaiAnanthakumar) |
 
 ## Repository Structure
 
@@ -40,12 +40,12 @@ analog-mems-electronic-stethoscope/
 │   │   └── final/
 │   └── reports/            Progress, monthly, and final reports
 │
-├── mechanical/             Mechanical design (owner: Thamilezai)
+├── mechanical/             Mechanical design (owner: Dayananthan)
 │   ├── solidworks/         SolidWorks parts (.SLDPRT) and assemblies (.SLDASM)
 │   ├── drawings/           Engineering drawings (.SLDDRW, PDF exports)
 │   └── documentation/      Design notes, material choices, assembly instructions
 │
-├── electronics/            Electronics design (owner: Dayananthan)
+├── electronics/            Electronics design (owner: Thamilezai)
 │   ├── schematic/          Schematic source files
 │   ├── pcb/                PCB layout source files
 │   ├── bom/                Bill of materials
@@ -75,8 +75,8 @@ analog-mems-electronic-stethoscope/
 | Branch | Owner | Works inside |
 |---|---|---|
 | `firmware/pirathi` | Pirathi | `firmware/` |
-| `mechanical/thamilezai` | Thamilezai | `mechanical/` |
-| `pcb/dayananthan` | Dayananthan | `electronics/` |
+| `mechanical/dayananthan` | Dayananthan | `mechanical/` |
+| `pcb/thamilezai` | Thamilezai | `electronics/` |
 
 Shared folders (`docs/`, `images/`, `manufacturing/`) may be updated from any branch. Coordinate with the team to avoid editing the same file at the same time.
 
@@ -90,7 +90,7 @@ Shared folders (`docs/`, `images/`, `manufacturing/`) may be updated from any br
                                │
           ┌────────────────────┼────────────────────┐
           │                    │                    │
-  firmware/pirathi    mechanical/thamilezai    pcb/dayananthan
+  firmware/pirathi    mechanical/dayananthan      pcb/thamilezai
           │                    │                    │
       Firmware             SolidWorks              PCB
       Embedded             Mechanical          Electronics
@@ -106,7 +106,7 @@ Shared folders (`docs/`, `images/`, `manufacturing/`) may be updated from any br
    ```
 2. **Switch to your personal branch and bring it up to date with `main`**
    ```bash
-   git checkout firmware/pirathi        # or mechanical/thamilezai, pcb/dayananthan
+   git checkout firmware/pirathi        # or mechanical/dayananthan, pcb/thamilezai
    git merge main
    ```
    If a merge conflict occurs, **stop** and discuss it with the owner of the conflicting file before resolving it.
