@@ -11,7 +11,7 @@ The system covers:
 - **MEMS acoustic sensing**: an analog MEMS microphone captures auscultation sounds.
 - **Analog front-end**: amplification and biasing of the MEMS sensor output.
 - **Signal conditioning**: analog filtering to isolate the frequency bands of interest and prepare the signal for digitization.
-- **Embedded processing**: an STM32 microcontroller handles audio acquisition (ADC sampling) and digital filtering.
+- **Embedded processing**: an ESP32 microcontroller handles audio acquisition (ADC sampling) and digital filtering.
 - **BLE communication** (where applicable): wireless transfer of audio or data to an external device.
 - **PCB design**: schematic capture, PCB layout, BOM, and manufacturing outputs.
 - **Mechanical enclosure**: SolidWorks-designed housing, chest piece, and assembly.
