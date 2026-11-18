@@ -1,0 +1,4 @@
+# arduino-cli board profile: `arduino-cli compile stethoscope` uses these defaults.
+# Main board IC1 = ESP32-S3-WROOM-1-N16R8: 16 MB flash, 8 MB octal PSRAM, native USB (J2) as Serial.
+default_fqbn: esp32:esp32:esp32s3:USBMode=hwcdc,CDCOnBoot=cdc,FlashSize=16M,PSRAM=opi,PartitionScheme=app3M_fat9M_16MB,CPUFreq=240
+default_port: /dev/ttyACM0

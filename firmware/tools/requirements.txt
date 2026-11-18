@@ -1,0 +1,10 @@
+# PC software for the MEMS electronic stethoscope (Python >= 3.9)
+numpy>=1.24
+scipy>=1.10
+matplotlib>=3.7
+pyserial>=3.5        # USB link
+pyqtgraph>=0.13      # real-time viewer
+PyQt5>=5.15          # Qt binding for pyqtgraph (PySide6 also works)
+bleak>=0.22          # Bluetooth LE link (optional)
+sounddevice>=0.4     # "Listen" in the viewer (optional, needs PortAudio)
+# bioread            # uncomment to read BIOPAC .acq files directly

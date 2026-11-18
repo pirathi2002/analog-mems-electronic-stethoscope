@@ -1,0 +1,5 @@
+# Local outputs of the PC tools (recordings may contain personal health data;
+# add selected ones explicitly with git add -f)
+tools/recordings/
+tools/filter_design/
+build/
