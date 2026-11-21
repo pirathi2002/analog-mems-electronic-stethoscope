@@ -24,6 +24,8 @@ The AFE gain is set with trimmer **R2** (U3 gain = 1 + R2 / 3 kΩ). The firmware
 
 ## Signal chain
 
+Full stage-by-stage explanation, with each filter's equations and measured response: **[SIGNAL_PATH.md](SIGNAL_PATH.md)**.
+
 ```
 ADC 16 kHz ─► 63-tap FIR (≤1 kHz pass, −62 dB ≥2 kHz) ─► ÷4 ─► DC blocker (0.5 Hz) ─► RAW 4 kHz
                                                                   │
@@ -171,6 +173,16 @@ cd firmware/tools
 .venv/bin/python viewer.py --demo     # synthetic heart sounds, no hardware needed
 ```
 The viewer shows raw and filtered PCG, the spectrum, HR with confidence, AFE bias, and clipping warnings. It has mode/notch/gain controls, a **Record** button (WAV saved to `tools/recordings/`) and **Listen** (headphones).
+
+#### Noise reduction on the PC (right-hand panel)
+The Bluetooth radio of the ESP32 adds interference to the analog signal. On the main board it was the largest noise source: 72–86 % of the 20–400 Hz power in the first recordings. The right-hand panel removes it on the PC; the firmware is not changed.
+
+1. Take the chest-piece **off the body**, keep it still, and press **Calibrate noise** (5 s).
+2. Place the chest-piece on the chest. The **Denoised PCG** plot, the green spectrum and **Listen** now use the cleaned signal. The purple panel below it shows the cleaned signal with only a sharp **400 Hz low-pass** (8th-order Butterworth, no high-pass and no notch). The **Calibration noise spectrum** next to the live spectrum shows the noise recorded during calibration, before (grey) and after (green) pulse removal.
+3. **Heart rate from the denoised signal (PC)** appears after 8 s.
+4. **Record** also saves `<name>_denoised.wav` (it starts `delay_samples` later; see its JSON).
+
+What it removes, and how, is in [SIGNAL_PATH.md](SIGNAL_PATH.md#pc-noise-reduction-viewer). On the first heart recording it lowered the noise by 11–23 dB and made the heart sounds visible. Calibrate again after changing between Bluetooth and UART. Gain changes with R2 are followed automatically.
 
 ### Bluetooth LE
 The device advertises as **`MEMS-Stetho`**. Service `6e5a0001-…`:
