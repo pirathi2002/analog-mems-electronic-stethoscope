@@ -162,6 +162,84 @@ def test_metrics() -> None:
           f"alignment lag {al.lag_s * 1e3:.1f} ms (true 250), r = {al.pearson_r:.3f}, envelope r = {al.envelope_r:.3f}")
 
 
+def _interference(n: int, fs: int, amp: float, rng: np.random.Generator) -> np.ndarray:
+    """Bluetooth-like interference as measured on the main board: a 2.5 ms double-hump
+    pulse every 10-12.5 ms, plus an 8 ms multi-packet burst once per second."""
+    z = np.zeros(n)
+    pulse = np.array([0.5, 1, 1, 1, 0.4, 1, 1, 1, 0.5, 0.1])
+    t = 20
+    while t < n - 20:
+        z[t:t + len(pulse)] += amp * pulse
+        t += int(rng.choice([40, 45, 50]))
+    burst = np.concatenate([np.ones(10), [0.3], np.ones(9), [0.3], np.ones(10)])
+    period = fs * 1.0016
+    k = 0
+    while True:
+        s = int(0.3 * fs + k * period + rng.integers(-12, 13))
+        if s + len(burst) >= n:
+            break
+        z[s:s + len(burst)] = amp * 1.1 * burst
+        k += 1
+    return z
+
+
+def test_denoise() -> None:
+    from stetho.denoise import Denoiser
+
+    print("\n[denoise] PC noise reduction (calibration + pulse removal + background subtraction)")
+    fs = dsp.FS
+    rng = np.random.default_rng(5)
+    bpm = 72.0
+    heart, _ = synth_pcg(duration_s=60, fs=fs, bpm=bpm, snr_db=40, seed=7)
+    heart = 0.01 * heart / np.max(np.abs(heart))
+    cal = _interference(5 * fs, fs, 0.01, rng) + 2e-4 * rng.standard_normal(5 * fs)
+    live = heart + _interference(len(heart), fs, 0.01, rng) + 2e-4 * rng.standard_normal(len(heart))
+    status = {"mode": "heart", "hp": 25, "lp": 400, "notch": 50, "order": 4, "gain": 1.0, "fs_adc": fs * 4 * 1.0016}
+
+    def run(dn: Denoiser, x: np.ndarray) -> np.ndarray:
+        out, i = [], 0
+        while i < len(x):
+            k = int(rng.integers(60, 400))
+            y = dn.feed(x[i:i + k])
+            if y is not None and len(y):
+                out.append(y)
+            i += k
+        return np.concatenate(out)
+
+    chain = dsp.user_chain_sos("custom", 50.0, 4, custom=(25.0, 400.0))
+    dn = Denoiser(pulse_on=False, spectral_on=False)
+    dn.update_settings(status)
+    dn.start_calibration(5)
+    y = run(dn, np.concatenate([cal, live]))
+    ref = signal.sosfilt(chain, live)
+    err = np.max(np.abs(y[dn.delay:] - ref[: len(y) - dn.delay]))
+    check(err < 1e-9, f"both stages off = device listening chain (max error {err:.1e}, latency {dn.delay} samples)")
+
+    dn = Denoiser()
+    dn.update_settings(status)
+    dn.start_calibration(5)
+    y = run(dn, np.concatenate([cal, live]))
+    clean = signal.sosfilt(chain, heart)
+    noisy = signal.sosfilt(chain, live)
+    a, b = y[dn.delay + 10 * fs:], clean[10 * fs: len(y) - dn.delay]
+    r_after = np.corrcoef(a, b)[0, 1]
+    r_before = np.corrcoef(noisy[10 * fs:], clean[10 * fs:])[0, 1]
+    check(dn.pulses is not None and 70 < dn.info["pulses_per_s"] < 100,
+          f"calibration learned the pulses ({dn.info.get('pulses_per_s', 0):.0f}/s)")
+    check(r_after > 0.85 and r_after > r_before + 0.3,
+          f"correlation with the clean heart sound {r_before:.3f} -> {r_after:.3f}")
+    check(dn.status.locked, "locked onto the 1-per-second status bursts")
+    check(dn.hr.result.valid and abs(dn.hr.bpm - bpm) < 3, f"PC heart rate {dn.hr.bpm:.1f} bpm (true {bpm:.0f})")
+
+    # the analog gain (trimmer R2) is raised 5x after calibration: pulses and heart scale together
+    dn = Denoiser()
+    dn.update_settings(status)
+    dn.start_calibration(5)
+    run(dn, np.concatenate([cal, 5 * live]))
+    check(4 < dn.pulses.gain_ratio < 6 and abs(dn.hr.bpm - bpm) < 3,
+          f"gain raised 5x: tracked x{dn.pulses.gain_ratio:.1f}, heart rate {dn.hr.bpm:.1f} bpm")
+
+
 def main() -> int:
     with tempfile.TemporaryDirectory() as d:
         tmp = Path(d)
@@ -171,6 +249,7 @@ def main() -> int:
         test_notch(exe, tmp)
         test_hr(exe, tmp)
         test_metrics()
+        test_denoise()
     print()
     if FAILS:
         print(f"{len(FAILS)} check(s) FAILED")
